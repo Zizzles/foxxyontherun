@@ -109,16 +109,43 @@ public class Player : MonoBehaviour
         //Spacebar to Jump
 
         Rigidbody2D rb2d = GetComponent<Rigidbody2D>();
+        bool jump = Input.GetKeyDown(KeyCode.Space);
+        float fallValue = GetComponent<Rigidbody2D>().velocity.y;
+        Animator anim = GetComponent<Animator>();
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (jump && onGround == true)
         {
             jumpSound.Play();
-            GetComponent<Rigidbody2D>().AddForce(new Vector2(0, jumpForce));
+            rb2d.AddForce(new Vector2(0, jumpForce));
         }
- 
-        //Jumping Sprite Animation
 
+        while(fallValue > 0)
+        {
+            anim.SetBool("Jump", true);
+        }
 
+        while(fallValue < 0)
+        {
+            anim.SetFloat("Fall", fallValue);
+        }
+
+        /*if (fallValue == 0 && onGround == true)
+        {
+            anim.SetBool("Jump", false);
+            anim.SetBool("JumpExit", false);
+        }
+        else if (fallValue > 0 && onGround == false || fallValue > 0 && GetComponent<Transform>().position.y !=0)
+        {
+            anim.SetFloat("Fall", fallValue);
+            anim.SetBool("Jump", true);
+            anim.SetBool("JumpExit", false);
+        }
+        else if (fallValue < 0 && GetComponent<Transform>().position.y != 0 )
+        {
+            anim.SetFloat("Fall", fallValue);
+            anim.SetBool("Jump", false);
+            anim.SetBool("JumpExit", true);
+        }*/
     }
 
     //Lives Animation
@@ -137,7 +164,7 @@ public class Player : MonoBehaviour
 
         if (collision2D.gameObject.CompareTag("Platforms"))
         {
-            //
+            onGround = true;
         }
 
 
@@ -151,6 +178,9 @@ public class Player : MonoBehaviour
     void OnCollisionExit2D(Collision2D collision2D)
 
     {
-    
+        if (collision2D.gameObject.CompareTag("Platforms"))
+        {
+            onGround = false;
+        }
     }
 }
